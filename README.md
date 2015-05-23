@@ -1,7 +1,7 @@
 Ellipsis Verily
 ================
 
-JQuery plugin for text truncation supporting inner tags ([demo](demo/index.html)).
+JQuery plugin for text truncation supporting inner tags ([demo](http://lbruney.github.io/ellipsis-verily/demo/index.html)).
 
 Usage
 ================
