@@ -57,7 +57,7 @@ a .ellipsis-handler {
       <p><a href="#"><strong class="ellipsis-handler">Read more</strong></a></p>
     </div>
     <div class="wrapper2">  
-      <div data-js-ellipsis-verily="{'parent':'.wrapper2', 'max': 200}" class="make-ellipsis">
+      <div data-js-ellipsis-verily="{'parent':'.wrapper2', 'max': 200, 'attributedTags': ['a']}" class="make-ellipsis">
         <h2>Test Truncation</h2>
         <p class="text-center"><img src="assets/img/wcrowd.jpeg" title="crowd" width="200" align="left" class="crowd"><a href="https://github.com/lbruney/ellipsis-verily"><span>Back to Plugin</span></a></p><span>Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt. Lorem ipsum dolor sit amet.</span>
         <ul> 
@@ -79,7 +79,6 @@ a .ellipsis-handler {
       data = $(this).attr('data-js-ellipsis-verily');
       data = data.replace(/\'/g, '"');
       data = JSON.parse(data);
-      console.log(data);
       return $(this).EllipsisVerily(data);
     });
   });
