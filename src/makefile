@@ -1,4 +1,4 @@
-staticJs="../demo/assets/js/"
+staticJs=../demo/assets/js/
 
 all: jade coffee minify
 

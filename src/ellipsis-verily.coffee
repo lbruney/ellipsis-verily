@@ -121,6 +121,8 @@
 
   EllipsisVerily::makeEllipsis = ->
     max = (@getTotalTags() * 5) + @options.max 
+    if @html.length < max
+      return
     splitLocation = @html.indexOf(' ', max)
     @half1 = @html.substr(0, splitLocation)
     @half2 = @html.substr(splitLocation, @html.length - 1)

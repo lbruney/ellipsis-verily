@@ -137,6 +137,9 @@
     EllipsisVerily.prototype.makeEllipsis = function() {
       var max, splitLocation;
       max = (this.getTotalTags() * 5) + this.options.max;
+      if (this.html.length < max) {
+        return;
+      }
       splitLocation = this.html.indexOf(' ', max);
       this.half1 = this.html.substr(0, splitLocation);
       this.half2 = this.html.substr(splitLocation, this.html.length - 1);
