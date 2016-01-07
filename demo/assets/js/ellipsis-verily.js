@@ -141,11 +141,15 @@
         return;
       }
       splitLocation = this.html.indexOf(' ', max);
-      this.half1 = this.html.substr(0, splitLocation);
-      this.half2 = this.html.substr(splitLocation, this.html.length - 1);
-      this.findBreaks();
-      this.recreateHtml();
-      this.element.html(this.finalHtml);
+      if (splitLocation > -1) {
+        this.half1 = this.html.substr(0, splitLocation);
+        this.half2 = this.html.substr(splitLocation, this.html.length - 1);
+        this.findBreaks();
+        this.recreateHtml();
+        return this.element.html(this.finalHtml);
+      } else {
+
+      }
     };
     EllipsisVerily.prototype.findBreaks = function() {
       var closeTags, d, difference, i, openTags, openingTag;

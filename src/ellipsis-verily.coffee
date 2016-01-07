@@ -124,12 +124,14 @@
     if @html.length < max
       return
     splitLocation = @html.indexOf(' ', max)
-    @half1 = @html.substr(0, splitLocation)
-    @half2 = @html.substr(splitLocation, @html.length - 1)
-    @findBreaks()
-    @recreateHtml()
-    @element.html(@finalHtml)
-    return
+    if splitLocation > -1
+      @half1 = @html.substr(0, splitLocation)
+      @half2 = @html.substr(splitLocation, @html.length - 1)
+      @findBreaks()
+      @recreateHtml()
+      @element.html(@finalHtml)
+    else 
+      return
 
   EllipsisVerily::findBreaks = ->
     i = 0
