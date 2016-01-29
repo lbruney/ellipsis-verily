@@ -1,6 +1,6 @@
 {
   "name": "ellipsis-verily",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "JQuery plugin for text truncation supporting inner tags",
   "keywords": [
     "jquery-plugin",
@@ -32,7 +32,7 @@
     "url": "https://github.com/lbruney/ellipsis-verily/issues"
   },
   "homepage": "https://github.com/lbruney/ellipsis-verily",
-  "_id": "ellipsis-verily@1.1.0",
-  "_from": "ellipsis-verily@~1.1.0",
-  "_resolved": "https://github.com/lbruney/ellipsis-verily/archive/1.1.0.tar.gz"
+  "_id": "ellipsis-verily@1.1.1",
+  "_from": "ellipsis-verily@~1.1.1",
+  "_resolved": "https://github.com/lbruney/ellipsis-verily/archive/1.1.1.tar.gz"
 }
