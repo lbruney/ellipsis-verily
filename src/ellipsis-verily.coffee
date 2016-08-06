@@ -5,9 +5,9 @@
   @year 2014
 ###
 
-(($) ->
-  'use scrict'
-  EllipsisVerily = (element, options) ->
+class EllipsisVerily
+
+  constructor: (element, options) ->
     defaults =
       max: 450
       handler: '.ellipsis-handler'
@@ -30,15 +30,14 @@
     @attributedTagCount = @options.attributedTags.length
     @tagsLength = {}
     @init()
-    return
+    return this
 
-  EllipsisVerily::init = ->
+  init: ->
     @placeHolderTags()
     @makeEllipsis()
     @setEvents()
-    return
 
-  EllipsisVerily::setEvents = ->
+  setEvents: ->
     that = @
     if (@options.parent)
       $parentsUntil = @element.parentsUntil(@options.parent)
@@ -60,8 +59,9 @@
       return false
     return
 
-  EllipsisVerily::placeHolderTags = ->
-    @html = @element.html()
+  placeHolderTags: ->
+    # Normalize text
+    @html = @element.html().replace(/%[A-F\d]{2}/g, 'U')
     @attributedTag = {}
     i = 0
     while i < @normalTagCount
@@ -76,25 +76,25 @@
     @html = @stripOtherTags(@html)
     return
 
-  EllipsisVerily::stripOtherTags =(text) ->
+  stripOtherTags: (text) ->
     return text.replace(/(<([^>]+)>)/ig, '') # Doesn't support weird html like '<img alt="a>b" src="a_b.gif">'
 
-  EllipsisVerily::replaceAttributedTag =(tag) ->
+  replaceAttributedTag: (tag) ->
     @attributedTag[tag] = $(tag)
     @html = @html.replace(@getRegex(@getTag(tag)), @getPlaceholderTag(tag)+@getPlaceholderTag(tag, false))
     return
 
-  EllipsisVerily::replaceTag =(tag) ->
+  replaceTag: (tag) ->
     @html = @html.replace(@getRegex(@getTag(tag)), @getPlaceholderTag(tag))
     @html = @html.replace(@getRegex(@getTag(tag, false)), @getPlaceholderTag(tag, false))
     return
 
-  EllipsisVerily::replenishTag =(tag) ->
+  replenishTag: (tag) ->
     @finalHtml = @finalHtml.replace(@getRegex(@getPlaceholderTag(tag)), @getTag(tag, true, true))
     @finalHtml = @finalHtml.replace(@getRegex(@getPlaceholderTag(tag, false)), @getTag(tag, false))
     return
 
-  EllipsisVerily::replenishAttributedTag =(tag) ->
+  replenishAttributedTag: (tag) ->
     i = 0
     while i < @attributedTag[tag].length
       original = @attributedTag[tag][i].outerHTML
@@ -104,7 +104,7 @@
       i++
     return
 
-  EllipsisVerily::getTag =(tag, opening = true, simple = false) ->
+  getTag: (tag, opening = true, simple = false) ->
     if (opening)
       if (simple)
         return '<'+tag+'>'
@@ -113,17 +113,22 @@
     else 
       return '</'+tag+'>'
 
-  EllipsisVerily::getPlaceholderTag =(tag, opening = true) ->
+  getPlaceholderTag: (tag, opening = true) ->
     if (opening)
       return '{'+tag+'}'
     else 
       return '{/'+tag+'}'
 
-  EllipsisVerily::makeEllipsis = ->
+  makeEllipsis: ->
     max = (@getTotalTags() * 5) + @options.max 
     if @html.length < max
       return
-    splitLocation = @html.indexOf(' ', max)
+
+    # Find non-English text
+    if @html.match(/[\u3400-\u9FBF]/)
+      splitLocation = max/2
+    else
+      splitLocation = @html.indexOf(' ', max)
     if splitLocation > -1
       @half1 = @html.substr(0, splitLocation)
       @half2 = @html.substr(splitLocation, @html.length - 1)
@@ -133,22 +138,26 @@
     else 
       return
 
-  EllipsisVerily::findBreaks = ->
+  findBreaks: ->
     i = 0
+    @brokenTags = {}
     while i < @normalTagCount
-      openingTag = @getPlaceholderTag(@tags[i])
+      tag = @tags[i]
+      openingTag = @getPlaceholderTag(tag)
       openTags = @countOccurrences(openingTag)
-      closeTags = @countOccurrences(@getPlaceholderTag(@tags[i], false))
+      closeTags = @countOccurrences(@getPlaceholderTag(tag, false))
       if (openTags > closeTags)
         difference = openTags - closeTags
+        @brokenTags[tag] = difference
         d = 0
         while d < difference
-          @moveToTruncated(@half1.lastIndexOf(openingTag))
+          @appendToTruncated(openingTag)
+          # @moveToTruncated(@half1.lastIndexOf(openingTag))
           d++
       i++
     return
 
-  EllipsisVerily::recreateHtml = ->
+  recreateHtml: ->
     i = 0
     @finalHtml = '<div class="'+@options.visible.substr(1)+'">'+@half1+'<span class="'+@options.ellipsis.substr(1)+' '+@options.showClass+'">...</span></div><div class="'+@options.truncated.substr(1)+' '+@options.hiddenClass+'" >'+@half2+'</div>'
     while i < @normalTagCount
@@ -161,23 +170,26 @@
       i++
     return
 
-  EllipsisVerily::moveToTruncated =(from) ->
+  moveToTruncated: (from) ->
     temp = @half1.substr(from, @half1.length - 1)
     @half2 = temp + @half2
     @half1 = @half1.substr(0, from)
     return
 
-  EllipsisVerily::countOccurrences =(tag) ->
+  appendToTruncated: (placeHolderTag) ->
+    @half2 = placeHolderTag + @half2
+
+  countOccurrences: (tag) ->
     matches = @half1.match(@getRegex(tag))
     if (matches)
       return matches.length
     else 
       return 0
 
-  EllipsisVerily::getRegex =(tag) ->
+  getRegex: (tag) ->
     return new RegExp(tag, 'gi')
 
-  EllipsisVerily::getTotalTags = ->
+  getTotalTags: ->
     that = @
     totalTagsLength = 0
     $.each @tags, (key, value) ->
@@ -187,13 +199,10 @@
       return
     return totalTagsLength
 
-  EllipsisVerily::hasTag =(tag) ->
+  hasTag: (tag) ->
     return (that.tagsLength[tag] > 0)
 
   $.fn.EllipsisVerily = (options) ->
     $(this).each (i, element) ->
       $(this).data 'ellipsis-verily', new EllipsisVerily(this, options)  unless $(this).data('ellipsis-verily')
     return
-
-  return
-) jQuery
