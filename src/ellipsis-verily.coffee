@@ -1,5 +1,5 @@
 ###
-  A true plugin for text truncation.
+  A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
   @year 2014
@@ -10,31 +10,27 @@ class EllipsisVerily
   constructor: (element, options) ->
     defaults =
       max: 450
-      attributedTagSymbol:
-        open: '♠'
-        close: '♣'
+      delimeter: '♠'
       nonEnglish:
-        delimiter: ' '
-        dividend: 2
+        delimiter: '。'
+        dividend: 1
       handler: '.ellipsis-handler'
       visible: '.visible-text'
       truncated: '.truncated-text'
       ellipsis: '.ellipsis-text'
       hiddenClass: 'display-none'
       showClass: 'display-inline'
-      activeClass: 'open'
+      activeClass: 'is-open'
       moreText: 'Read more'
       lessText: 'Show less'
       parent: null
-      normalTags: ['p', 'span', 'strong', 'em', 'label', 'br', 'h1', 'h2', 'h3', 'h4', 'b', 'code', 'ul', 'li']
-      attributedTags: ['a', 'img']
+      tags: ['a', 'img', 'p', 'span', 'strong', 'em', 'label', 'br', 'h1', 'h2', 'h3', 'h4', 'b', 'code', 'ul', 'li']
+      selfClosing: ['img', 'hr']
 
-    @options = $.extend(defaults, options)
-    @element = $(element)
-    @tags = @options.normalTags.concat(@options.attributedTags)
-    @normalTagCount = @options.normalTags.length
-    @attributedTagCount = @options.attributedTags.length
-    @tagsLength = {}
+    @ops = $.extend(defaults, options)
+    @el = $(element)
+    @tags = @ops.tags
+
     @init()
     return this
 
@@ -45,97 +41,80 @@ class EllipsisVerily
 
   setEvents: ->
     that = @
-    if (@options.parent)
-      $parentsUntil = @element.parentsUntil(@options.parent)
-      $parent = (if ($parentsUntil.length > 0) then $parentsUntil.parent() else @element.parent())
-      @handler = $parent.find(@options.handler)
+    if (@ops.parent)
+      $parentsUntil = @el.parentsUntil(@ops.parent)
+      $parent = (if ($parentsUntil.length > 0) then $parentsUntil.parent() else @el.parent())
+      @handler = $parent.find(@ops.handler)
     else 
-      @handler = $(@options.handler)
-    @handler.click ->
-      $element = $(@)
-      $element.toggleClass(that.options.activeClass)
+      @handler = $(@ops.handler)
 
-      if ($element.hasClass(that.options.activeClass))
-        $element.text(that.options.lessText)
+    @handler.click (e) =>
+      $el = $(e.currentTarget)
+      $el.toggleClass(@ops.activeClass)
+
+      if ($el.hasClass(@ops.activeClass))
+        $el.text(@ops.lessText)
       else
-        $element.text(that.options.moreText)
+        $el.text(@ops.moreText)
 
-      that.element.find(that.options.ellipsis).toggleClass(that.options.hiddenClass).toggleClass(that.options.showClass)
-      that.element.find(that.options.truncated).toggleClass(that.options.hiddenClass).toggleClass(that.options.showClass)
+      @el.find(@ops.ellipsis).toggleClass(@ops.hiddenClass).toggleClass(@ops.showClass)
+      @el.find(@ops.truncated).toggleClass(@ops.hiddenClass).toggleClass(@ops.showClass)
       return false
     return
 
   placeHolderTags: ->
     # Normalize text
-    @html = @element.html().replace(/%[A-F\d]{2}/g, 'U')
-    @attributedTag = {}
+    @html = @el.html().replace(/%[A-F\d]{2}/g, 'U')
+    @openTagsHtml = []
+    @closeTagsHtml = []
+    @tagsHtml = []
     i = 0
-    while i < @normalTagCount
-      @replaceTag(@tags[i])
+    while i < @tags.length
+      @findTags(@tags[i])
+      @findTags(@tags[i], false)
       i++
 
-    i = @normalTagCount
-    while i < @normalTagCount + @attributedTagCount
-      @replaceAttributedTag(@tags[i])
-      i++
-
-    @html = @stripOtherTags(@html)
+    @compressHtml(@openTagsHtml)
+    @compressHtml(@closeTagsHtml)
     return
 
-  stripOtherTags: (text) ->
-    return text.replace(/(<([^>]+)>)/ig, '') # Doesn't support weird html like '<img alt="a>b" src="a_b.gif">'
-
-  replaceAttributedTag: (tag) ->
-    @attributedTag[tag] = $(tag)
-    @html = @html.replace(@getRegex(@getTag(tag)), @buildAttributedTag(tag))
-    return
-
-  replaceTag: (tag) ->
-    @html = @html.replace(@getRegex(@getTag(tag)), @getPlaceholderTag(tag))
-    @html = @html.replace(@getRegex(@getTag(tag, false)), @getPlaceholderTag(tag, false))
-    return
-
-  replenishTag: (tag) ->
-    @finalHtml = @finalHtml.replace(@getRegex(@getPlaceholderTag(tag)), @getTag(tag, true, true))
-    @finalHtml = @finalHtml.replace(@getRegex(@getPlaceholderTag(tag, false)), @getTag(tag, false))
-    return
-
-  replenishAttributedTag: (tag) ->
-    i = 0
-    while i < @attributedTag[tag].length
-      original = @attributedTag[tag][i].outerHTML
-      inner = @attributedTag[tag][i].innerHTML
-      placeholder = @buildAttributedTag(tag)+inner
-      @finalHtml = @finalHtml.replace(@getRegex(placeholder), original)
-      i++
-    return
-
-  buildAttributedTag: (tag) ->
-    @getPlaceholderTag(tag)+@options.attributedTagSymbol.open
-
-  getTag: (tag, opening = true, simple = false) ->
-    if (opening)
-      if (simple)
-        return '<'+tag+'>'
-      else
-        return '<'+tag+'([^>]*)>'
-    else 
+  getTag: (tag, open=true) ->
+    if !open
       return '</'+tag+'>'
-
-  getPlaceholderTag: (tag, opening = true) ->
-    if (opening)
-      return '{'+tag+'}'
     else 
-      return '{/'+tag+'}'
+      return '<'+tag+'[^>]*>'
+
+  findTags: (tag, open=true) ->
+    regex = @getRegex(@getTag(tag, open))
+    foundTags = @html.match(regex)
+    if foundTags && foundTags.length
+      if open
+        @openTagsHtml = @openTagsHtml.concat(foundTags)
+      else 
+        @closeTagsHtml = @closeTagsHtml.concat(foundTags)
+
+  compressHtml: (tags) ->
+    i = 0
+    while i < tags.length
+      tag = tags[i]
+      tagNoSpace = @getTagNoSpace(tag)
+      @tagsHtml.push(tagNoSpace)
+      @html = @html.replace(@getRegex(tag), tagNoSpace)
+      i++
 
   makeEllipsis: ->
-    max = (@getTotalTags() * 5) + @options.max 
+
+    if @tagsHtml.length
+      max = @tagsHtml.toString().length + @ops.max 
+    else 
+      max = @ops.max 
+
     if @html.length < max
       return
 
     # Find non-English text
     if @html.match(/[\u3400-\u9FBF]/)
-      splitLocation = @html.indexOf(@options.nonEnglish.delimiter, (max/@options.nonEnglish.dividend))
+      splitLocation = @html.indexOf(@ops.nonEnglish.delimiter, (max/@ops.nonEnglish.dividend))
     else
       splitLocation = @html.indexOf(' ', max)
     if splitLocation > -1
@@ -143,70 +122,57 @@ class EllipsisVerily
       @half2 = @html.substr(splitLocation, @html.length - 1)
       @findBreaks()
       @recreateHtml()
-      @element.html(@finalHtml)
-      @trashAttributedBreaks()
+      @el.html(@finalHtml)
     else 
       return
 
-  trashAttributedBreaks: ->
-    i = 0
-    @brokenTags = {}
-    while i < @attributedTagCount
-      tag = @options.attributedTags[i]
-      html = @element.find(@options.visible).html()
-      placeHolderTag = @buildAttributedTag(tag)
-      difference = @countOccurrences(placeHolderTag, html)
-      if (difference)
-        html = html.replace(@getRegex(placeHolderTag), '')
-        @element.find(@options.visible).html(html)
-      i++
-    return
-
   findBreaks: ->
     i = 0
-    @brokenTags = {}
-    while i < @normalTagCount
+    while i < @tags.length
       tag = @tags[i]
-      openingTag = @getPlaceholderTag(tag)
-      openTags = @countOccurrences(openingTag)
-      closeTags = @countOccurrences(@getPlaceholderTag(tag, false))
-      if (openTags > closeTags)
-        difference = openTags - closeTags
-        @brokenTags[tag] = difference
-        d = 0
-        while d < difference
-          @appendToTruncated(openingTag)
-          # @moveToTruncated(@half1.lastIndexOf(openingTag))
-          d++
+      if @ops.selfClosing.indexOf(tag) <= -1
+        closeTag = @getTag(tag, false)
+        fullTag = @getTag(tag)
+        totalOpenTags = @countOccurrences(fullTag)
+        totalCloseTags = @countOccurrences(closeTag)
+        if (totalOpenTags > totalCloseTags)
+          difference = totalOpenTags - totalCloseTags
+          d = 0
+          tagIndex = totalOpenTags - 1
+          openTags = @half1.match(@getRegex(fullTag))
+          while d < difference
+            openTag = openTags[tagIndex]
+            @appendToTruncated(openTag, closeTag)
+            tagIndex--
+            d++
       i++
     return
 
   recreateHtml: ->
+    @finalHtml = '<div class="'+@ops.visible.substr(1)+'">'+@half1+'<span class="'+@ops.ellipsis.substr(1)+' '+@ops.showClass+'">...</span></div><div class="'+@ops.truncated.substr(1)+' '+@ops.hiddenClass+'" >'+@half2+'</div>'
+    @replenishTags(@openTagsHtml)
+    @replenishTags(@closeTagsHtml)
+
+  replenishTags: (tags) ->
     i = 0
-    @finalHtml = '<div class="'+@options.visible.substr(1)+'">'+@half1+'<span class="'+@options.ellipsis.substr(1)+' '+@options.showClass+'">...</span></div><div class="'+@options.truncated.substr(1)+' '+@options.hiddenClass+'" >'+@half2+'</div>'
-    while i < @normalTagCount
-      @replenishTag(@tags[i])
+    while i < tags.length
+      @replenishTag(tags[i])
       i++
 
-    i = @normalTagCount
-    while i < @normalTagCount + @attributedTagCount
-      @replenishAttributedTag(@tags[i])
-      i++
-    return
+  replenishTag: (tag) ->
+    tagNoSpace = @getTagNoSpace(tag)
+    @finalHtml = @finalHtml.replace(@getRegex(tagNoSpace), tag)
 
-  moveToTruncated: (from) ->
-    temp = @half1.substr(from, @half1.length - 1)
-    @half2 = temp + @half2
-    @half1 = @half1.substr(0, from)
-    return
+  getTagNoSpace: (tag) ->
+    return tag.replace(' ', @ops.delimiter)
 
-  appendToTruncated: (placeHolderTag) ->
-    @half2 = placeHolderTag + @half2
+  appendToTruncated: (openTag, closeTag) ->
+    @half1 = @half1 + closeTag
+    @half2 = openTag + @half2
 
-  countOccurrences: (tag, html) ->
-    html = html || @half1
+  countOccurrences: (tag) ->
     matches = @half1.match(@getRegex(tag))
-    if (matches)
+    if matches
       return matches.length
     else 
       return 0
@@ -214,18 +180,6 @@ class EllipsisVerily
   getRegex: (tag) ->
     return new RegExp(tag, 'gi')
 
-  getTotalTags: ->
-    that = @
-    totalTagsLength = 0
-    $.each @tags, (key, value) ->
-      length = that.element.find(value).length
-      totalTagsLength = totalTagsLength + length
-      that.tagsLength[value] = length
-      return
-    return totalTagsLength
-
-  hasTag: (tag) ->
-    return (that.tagsLength[tag] > 0)
 
   $.fn.EllipsisVerily = (options) ->
     $(this).each (i, element) ->
