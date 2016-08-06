@@ -2,19 +2,19 @@
   A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
-  @year 2014
+  @year 2016
 ###
 
 class EllipsisVerily
 
   constructor: (element, options) ->
     defaults =
-      max: 450
-      delimeter: '♠'
-      nonEnglish:
-        delimiter: '。'
-        dividend: 1
-      handler: '.ellipsis-handler'
+      min: 300
+      delimiters:
+        tag: '♠'
+        break: ' '
+        nonEnglishBreak: '。'
+      handler: '.js-ellipsis-handler'
       visible: '.visible-text'
       truncated: '.truncated-text'
       ellipsis: '.ellipsis-text'
@@ -25,7 +25,7 @@ class EllipsisVerily
       lessText: 'Show less'
       parent: null
       tags: ['a', 'img', 'p', 'span', 'strong', 'em', 'label', 'br', 'h1', 'h2', 'h3', 'h4', 'b', 'code', 'ul', 'li']
-      selfClosing: ['img', 'hr']
+      selfClosing: ['img', 'hr', 'br']
 
     @ops = $.extend(defaults, options)
     @el = $(element)
@@ -35,15 +35,30 @@ class EllipsisVerily
     return this
 
   init: ->
-    @placeHolderTags()
+    @testIndexOf()
+    @makePlaceHolderTags()
     @makeEllipsis()
     @setEvents()
+
+  testIndexOf: ->
+    if !Array::indexOf
+      Array::indexOf = (elt) ->
+        len = @length >>> 0
+        from = Number(arguments[1]) or 0
+        from = if from < 0 then Math.ceil(from) else Math.floor(from)
+        if from < 0
+          from += len
+        while from < len
+          if from of this and @[from] == elt
+            return from
+          from++
+        -1
 
   setEvents: ->
     that = @
     if (@ops.parent)
       $parentsUntil = @el.parentsUntil(@ops.parent)
-      $parent = (if ($parentsUntil.length > 0) then $parentsUntil.parent() else @el.parent())
+      $parent = if $parentsUntil.length then $parentsUntil.parent() else @el.parent()
       @handler = $parent.find(@ops.handler)
     else 
       @handler = $(@ops.handler)
@@ -62,7 +77,10 @@ class EllipsisVerily
       return false
     return
 
-  placeHolderTags: ->
+  stripOtherTags: ->
+    @html = @html.replace(/(<([^>]+)>)/ig, '') 
+
+  makePlaceHolderTags: ->
     # Normalize text
     @html = @el.html().replace(/%[A-F\d]{2}/g, 'U')
     @openTagsHtml = []
@@ -71,11 +89,13 @@ class EllipsisVerily
     i = 0
     while i < @tags.length
       @findTags(@tags[i])
-      @findTags(@tags[i], false)
+      if @isNotSelfClosingTag(@tags[i])
+        @findTags(@tags[i], false)
       i++
 
     @compressHtml(@openTagsHtml)
     @compressHtml(@closeTagsHtml)
+    @stripOtherTags()
     return
 
   getTag: (tag, open=true) ->
@@ -83,6 +103,12 @@ class EllipsisVerily
       return '</'+tag+'>'
     else 
       return '<'+tag+'[^>]*>'
+
+  getPlaceholderTag: (tag, open=true) ->
+    if !open
+      return '〚/'+tag+'〛'
+    else 
+      return '〚'+tag+'[^〛]*〛'
 
   findTags: (tag, open=true) ->
     regex = @getRegex(@getTag(tag, open))
@@ -105,18 +131,18 @@ class EllipsisVerily
   makeEllipsis: ->
 
     if @tagsHtml.length
-      max = @tagsHtml.toString().length + @ops.max 
+      min = @tagsHtml.toString().length + @ops.min
     else 
-      max = @ops.max 
+      min = @ops.min 
 
-    if @html.length < max
+    if @html.length < min
       return
 
     # Find non-English text
     if @html.match(/[\u3400-\u9FBF]/)
-      splitLocation = @html.indexOf(@ops.nonEnglish.delimiter, (max/@ops.nonEnglish.dividend))
+      splitLocation = @html.indexOf(@ops.delimiters.nonEnglishBreak, min)
     else
-      splitLocation = @html.indexOf(' ', max)
+      splitLocation = @html.indexOf(@ops.delimiters.break, min)
     if splitLocation > -1
       @half1 = @html.substr(0, splitLocation)
       @half2 = @html.substr(splitLocation, @html.length - 1)
@@ -126,13 +152,16 @@ class EllipsisVerily
     else 
       return
 
+  isNotSelfClosingTag: (tag) ->
+    @ops.selfClosing.indexOf(tag) <= -1
+
   findBreaks: ->
     i = 0
     while i < @tags.length
       tag = @tags[i]
-      if @ops.selfClosing.indexOf(tag) <= -1
-        closeTag = @getTag(tag, false)
-        fullTag = @getTag(tag)
+      if @isNotSelfClosingTag(tag)
+        closeTag = @getPlaceholderTag(tag, false)
+        fullTag = @getPlaceholderTag(tag)
         totalOpenTags = @countOccurrences(fullTag)
         totalCloseTags = @countOccurrences(closeTag)
         if (totalOpenTags > totalCloseTags)
@@ -164,7 +193,9 @@ class EllipsisVerily
     @finalHtml = @finalHtml.replace(@getRegex(tagNoSpace), tag)
 
   getTagNoSpace: (tag) ->
-    return tag.replace(' ', @ops.delimiter)
+    tag = tag.replace(@getRegex(' '), @ops.delimiters.tag)
+        .replace(@getRegex('<'), '{')
+        .replace(@getRegex('>'), '}')
 
   appendToTruncated: (openTag, closeTag) ->
     @half1 = @half1 + closeTag

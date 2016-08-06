@@ -4,7 +4,7 @@
   A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
-  @year 2014
+  @year 2016
  */
 
 (function() {
@@ -14,13 +14,13 @@
     function EllipsisVerily(element, options) {
       var defaults;
       defaults = {
-        max: 450,
-        delimeter: '♠',
-        nonEnglish: {
-          delimiter: '。',
-          dividend: 1
+        min: 300,
+        delimiters: {
+          tag: '♠',
+          "break": ' ',
+          nonEnglishBreak: '。'
         },
-        handler: '.ellipsis-handler',
+        handler: '.js-ellipsis-handler',
         visible: '.visible-text',
         truncated: '.truncated-text',
         ellipsis: '.ellipsis-text',
@@ -31,7 +31,7 @@
         lessText: 'Show less',
         parent: null,
         tags: ['a', 'img', 'p', 'span', 'strong', 'em', 'label', 'br', 'h1', 'h2', 'h3', 'h4', 'b', 'code', 'ul', 'li'],
-        selfClosing: ['img', 'hr']
+        selfClosing: ['img', 'hr', 'br']
       };
       this.ops = $.extend(defaults, options);
       this.el = $(element);
@@ -41,9 +41,31 @@
     }
 
     EllipsisVerily.prototype.init = function() {
-      this.placeHolderTags();
+      this.testIndexOf();
+      this.makePlaceHolderTags();
       this.makeEllipsis();
       return this.setEvents();
+    };
+
+    EllipsisVerily.prototype.testIndexOf = function() {
+      if (!Array.prototype.indexOf) {
+        return Array.prototype.indexOf = function(elt) {
+          var from, len;
+          len = this.length >>> 0;
+          from = Number(arguments[1]) || 0;
+          from = from < 0 ? Math.ceil(from) : Math.floor(from);
+          if (from < 0) {
+            from += len;
+          }
+          while (from < len) {
+            if (from in this && this[from] === elt) {
+              return from;
+            }
+            from++;
+          }
+          return -1;
+        };
+      }
     };
 
     EllipsisVerily.prototype.setEvents = function() {
@@ -51,7 +73,7 @@
       that = this;
       if (this.ops.parent) {
         $parentsUntil = this.el.parentsUntil(this.ops.parent);
-        $parent = ($parentsUntil.length > 0 ? $parentsUntil.parent() : this.el.parent());
+        $parent = $parentsUntil.length ? $parentsUntil.parent() : this.el.parent();
         this.handler = $parent.find(this.ops.handler);
       } else {
         this.handler = $(this.ops.handler);
@@ -73,7 +95,11 @@
       })(this));
     };
 
-    EllipsisVerily.prototype.placeHolderTags = function() {
+    EllipsisVerily.prototype.stripOtherTags = function() {
+      return this.html = this.html.replace(/(<([^>]+)>)/ig, '');
+    };
+
+    EllipsisVerily.prototype.makePlaceHolderTags = function() {
       var i;
       this.html = this.el.html().replace(/%[A-F\d]{2}/g, 'U');
       this.openTagsHtml = [];
@@ -82,11 +108,14 @@
       i = 0;
       while (i < this.tags.length) {
         this.findTags(this.tags[i]);
-        this.findTags(this.tags[i], false);
+        if (this.isNotSelfClosingTag(this.tags[i])) {
+          this.findTags(this.tags[i], false);
+        }
         i++;
       }
       this.compressHtml(this.openTagsHtml);
       this.compressHtml(this.closeTagsHtml);
+      this.stripOtherTags();
     };
 
     EllipsisVerily.prototype.getTag = function(tag, open) {
@@ -97,6 +126,17 @@
         return '</' + tag + '>';
       } else {
         return '<' + tag + '[^>]*>';
+      }
+    };
+
+    EllipsisVerily.prototype.getPlaceholderTag = function(tag, open) {
+      if (open == null) {
+        open = true;
+      }
+      if (!open) {
+        return '〚/' + tag + '〛';
+      } else {
+        return '〚' + tag + '[^〛]*〛';
       }
     };
 
@@ -131,19 +171,19 @@
     };
 
     EllipsisVerily.prototype.makeEllipsis = function() {
-      var max, splitLocation;
+      var min, splitLocation;
       if (this.tagsHtml.length) {
-        max = this.tagsHtml.toString().length + this.ops.max;
+        min = this.tagsHtml.toString().length + this.ops.min;
       } else {
-        max = this.ops.max;
+        min = this.ops.min;
       }
-      if (this.html.length < max) {
+      if (this.html.length < min) {
         return;
       }
       if (this.html.match(/[\u3400-\u9FBF]/)) {
-        splitLocation = this.html.indexOf(this.ops.nonEnglish.delimiter, max / this.ops.nonEnglish.dividend);
+        splitLocation = this.html.indexOf(this.ops.delimiters.nonEnglishBreak, min);
       } else {
-        splitLocation = this.html.indexOf(' ', max);
+        splitLocation = this.html.indexOf(this.ops.delimiters["break"], min);
       }
       if (splitLocation > -1) {
         this.half1 = this.html.substr(0, splitLocation);
@@ -156,14 +196,18 @@
       }
     };
 
+    EllipsisVerily.prototype.isNotSelfClosingTag = function(tag) {
+      return this.ops.selfClosing.indexOf(tag) <= -1;
+    };
+
     EllipsisVerily.prototype.findBreaks = function() {
       var closeTag, d, difference, fullTag, i, openTag, openTags, tag, tagIndex, totalCloseTags, totalOpenTags;
       i = 0;
       while (i < this.tags.length) {
         tag = this.tags[i];
-        if (this.ops.selfClosing.indexOf(tag) <= -1) {
-          closeTag = this.getTag(tag, false);
-          fullTag = this.getTag(tag);
+        if (this.isNotSelfClosingTag(tag)) {
+          closeTag = this.getPlaceholderTag(tag, false);
+          fullTag = this.getPlaceholderTag(tag);
           totalOpenTags = this.countOccurrences(fullTag);
           totalCloseTags = this.countOccurrences(closeTag);
           if (totalOpenTags > totalCloseTags) {
@@ -207,7 +251,7 @@
     };
 
     EllipsisVerily.prototype.getTagNoSpace = function(tag) {
-      return tag.replace(' ', this.ops.delimiter);
+      return tag = tag.replace(this.getRegex(' '), this.ops.delimiters.tag).replace(this.getRegex('<'), '{').replace(this.getRegex('>'), '}');
     };
 
     EllipsisVerily.prototype.appendToTruncated = function(openTag, closeTag) {
