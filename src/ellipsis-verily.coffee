@@ -10,6 +10,12 @@ class EllipsisVerily
   constructor: (element, options) ->
     defaults =
       max: 450
+      attributedTagSymbol:
+        open: '♠'
+        close: '♣'
+      nonEnglish:
+        delimiter: ' '
+        dividend: 2
       handler: '.ellipsis-handler'
       visible: '.visible-text'
       truncated: '.truncated-text'
@@ -81,7 +87,7 @@ class EllipsisVerily
 
   replaceAttributedTag: (tag) ->
     @attributedTag[tag] = $(tag)
-    @html = @html.replace(@getRegex(@getTag(tag)), @getPlaceholderTag(tag)+@getPlaceholderTag(tag, false))
+    @html = @html.replace(@getRegex(@getTag(tag)), @buildAttributedTag(tag))
     return
 
   replaceTag: (tag) ->
@@ -99,10 +105,13 @@ class EllipsisVerily
     while i < @attributedTag[tag].length
       original = @attributedTag[tag][i].outerHTML
       inner = @attributedTag[tag][i].innerHTML
-      placeholder = @getPlaceholderTag(tag)+@getPlaceholderTag(tag, false)+inner
+      placeholder = @buildAttributedTag(tag)+inner
       @finalHtml = @finalHtml.replace(@getRegex(placeholder), original)
       i++
     return
+
+  buildAttributedTag: (tag) ->
+    @getPlaceholderTag(tag)+@options.attributedTagSymbol.open
 
   getTag: (tag, opening = true, simple = false) ->
     if (opening)
@@ -126,7 +135,7 @@ class EllipsisVerily
 
     # Find non-English text
     if @html.match(/[\u3400-\u9FBF]/)
-      splitLocation = max/2
+      splitLocation = @html.indexOf(@options.nonEnglish.delimiter, (max/@options.nonEnglish.dividend))
     else
       splitLocation = @html.indexOf(' ', max)
     if splitLocation > -1
@@ -135,8 +144,23 @@ class EllipsisVerily
       @findBreaks()
       @recreateHtml()
       @element.html(@finalHtml)
+      @trashAttributedBreaks()
     else 
       return
+
+  trashAttributedBreaks: ->
+    i = 0
+    @brokenTags = {}
+    while i < @attributedTagCount
+      tag = @options.attributedTags[i]
+      html = @element.find(@options.visible).html()
+      placeHolderTag = @buildAttributedTag(tag)
+      difference = @countOccurrences(placeHolderTag, html)
+      if (difference)
+        html = html.replace(@getRegex(placeHolderTag), '')
+        @element.find(@options.visible).html(html)
+      i++
+    return
 
   findBreaks: ->
     i = 0
@@ -179,7 +203,8 @@ class EllipsisVerily
   appendToTruncated: (placeHolderTag) ->
     @half2 = placeHolderTag + @half2
 
-  countOccurrences: (tag) ->
+  countOccurrences: (tag, html) ->
+    html = html || @half1
     matches = @half1.match(@getRegex(tag))
     if (matches)
       return matches.length
