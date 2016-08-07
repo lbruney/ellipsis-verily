@@ -4,7 +4,7 @@
   A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
-  @version 2.0.2
+  @version 2.0.3
   @year 2016
  */
 
