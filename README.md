@@ -1,4 +1,4 @@
-Ellipsis Verily
+Ellipsis Verily 2
 ================
 
 JQuery plugin for text truncation supporting inner tags. Also supports Chinese text. See [demo](http://lbruney.github.io/ellipsis-verily/demo/index.html).
@@ -20,9 +20,23 @@ Usage
 * Call plugin on the to be truncated element, examples:
 ```
   $('.to-be-truncated').EllipsisVerily();
-  $('.to-be-truncated').EllipsisVerily({ min: 200, normalTags: ['span', 'p'] });
+  $('.to-be-truncated').EllipsisVerily({ min: 200, tags: ['span', 'p'] });
   $('.to-be-truncated').EllipsisVerily({ min: 50, handler: '#toggle-truncated'});
 ```
+
+Warning
+================
+This has been changed from the previous versions 1.x.x, however it contains some significant bug fixes, including:  
+- Fix truncation of attributed tags  
+- Added Chinese text truncation support  
+- Fixed dumping of tags separated by truncation  
+
+Changelog from v1.x.x
+================
+The following API options were removed or refactored:  
+- `max` - This was renamed, now called min since max name was semantically incorrect.  
+- `normalTags` and `attributedTags` - These were removed and replaced with one list `tags`   
+- `.ellipsis-handler` - This default classname was renamed to `.js-ellipsis-handler`  
 
 
 API
