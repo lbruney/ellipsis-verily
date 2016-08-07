@@ -36,7 +36,8 @@ Changelog from v1.x.x
 The following API options were removed or refactored:  
 - `max` - This was renamed, now called `min` since `max` name was semantically incorrect.  
 - `normalTags` and `attributedTags` - These were removed and replaced with one list `tags`   
-- `.ellipsis-handler` - This default classname was renamed to `.js-ellipsis-handler`  
+- `.ellipsis-handler` - This default classname was renamed to `.js-ellipsis-handler` 
+- `.open` - This default classname was renamed to `.is-open`  
 
 
 API
