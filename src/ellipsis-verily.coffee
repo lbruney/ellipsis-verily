@@ -2,7 +2,7 @@
   A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
-  @version 2.0
+  @version 2.0.2
   @year 2016
 ###
 
@@ -26,7 +26,7 @@ class EllipsisVerily
       lessText: 'Show less'
       parent: null
       tags: ['a', 'img', 'p', 'span', 'strong', 'em', 'label', 'br', 'h1', 'h2', 'h3', 'h4', 'b', 'code', 'ul', 'li']
-      selfClosing: ['img', 'hr', 'br']
+      selfClosingTags: ['img', 'hr', 'br']
 
     @ops = $.extend(defaults, options)
     @el = $(element)
@@ -153,7 +153,7 @@ class EllipsisVerily
       return
 
   isNotSelfClosingTag: (tag) ->
-    @ops.selfClosing.indexOf(tag) <= -1
+    @ops.selfClosingTags.indexOf(tag) <= -1
 
   findBreaks: ->
     i = 0

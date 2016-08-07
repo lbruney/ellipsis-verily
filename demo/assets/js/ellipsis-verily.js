@@ -4,7 +4,7 @@
   A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
-  @version 2.0
+  @version 2.0.2
   @year 2016
  */
 
@@ -32,7 +32,7 @@
         lessText: 'Show less',
         parent: null,
         tags: ['a', 'img', 'p', 'span', 'strong', 'em', 'label', 'br', 'h1', 'h2', 'h3', 'h4', 'b', 'code', 'ul', 'li'],
-        selfClosing: ['img', 'hr', 'br']
+        selfClosingTags: ['img', 'hr', 'br']
       };
       this.ops = $.extend(defaults, options);
       this.el = $(element);
@@ -198,7 +198,7 @@
     };
 
     EllipsisVerily.prototype.isNotSelfClosingTag = function(tag) {
-      return this.ops.selfClosing.indexOf(tag) <= -1;
+      return this.ops.selfClosingTags.indexOf(tag) <= -1;
     };
 
     EllipsisVerily.prototype.findBreaks = function() {

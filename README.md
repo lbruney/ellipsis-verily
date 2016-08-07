@@ -34,7 +34,7 @@ This has been changed from the previous versions 1.x.x, however it contains some
 Changelog from v1.x.x
 ================
 The following API options were removed or refactored:  
-- `max` - This was renamed, now called `min` since `max` name was semantically incorrect.  
+- `max` - This was renamed, now called `min` since `max` name was semantically incorrect. 
 - `normalTags` and `attributedTags` - These were removed and replaced with one list `tags`   
 - `.ellipsis-handler` - This default classname was renamed to `.js-ellipsis-handler` 
 - `.open` - This default classname was renamed to `.is-open`  
@@ -43,7 +43,7 @@ The following API options were removed or refactored:
 API
 ================
 `min (int)`:              Minimum onscreen characters. The point of truncation is dependent on the first occurence of the delimiter; default is `300`   
-`tags (array)`:           List of tags to support  
+`tags (array)`:           List of tags to support; other tags are stripped   
 `moreText (string)`:      The text to show on the handler when text is truncated; default is `Read more`   
 `lessText (string)`:      The text to show on the handler when all text is visible; default is `Show less`  
 `parent (string)`:        The element selector (class/id) of the parent where the handler can be found. This is useful if multiple containers on the same page are to be truncated which all have the same handler class name. default is `null`; (Do not set this if the text to be truncated and the handler do not have the same parent container)  
@@ -53,8 +53,10 @@ API
 - `nonEnglishBreak (string)`: Additional break delimiter for non-English texts; e.g. Chinese texts do not contain English character spaces, so we can break at `。`  
    
 
-Other API
+Other API 
 ================
+There is infact no real need to tamper with these, but they are here if needed.
+`selfClosingTags (array)`:           List of self closing tags
 `handler (string)`:       The element selector (class/id) that toggles between the truncation; default is `.js-ellipsis-handler`   
 `visible (string)`:       The element selector (class/id) that is visible after truncation; default is `.visible-text`  
 `truncated (string)`:     The element selector (class/id) that is truncated; default is `.truncated-text`      
