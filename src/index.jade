@@ -3,7 +3,7 @@ html
   head
     title Ellipsis Verily
     script(src='assets/js/jquery-1.9.0.js')
-    script(src='assets/js/ellipsis-verily.min.js')
+    script(src='assets/js/ellipsis-verily.js')
     style(type="text/css")
       :stylus
         $light-grey = #eee
@@ -21,7 +21,7 @@ html
             background-color $light-grey
             padding 5px
             border-radius 3px
-        .make-ellipsis, .wrapper, .wrapper2
+        .make-ellipsis, .wrapper
           width 70%
           margin auto 
           font-family 'Helvetica Neue', Helvetica, Arial, sans-serif
@@ -33,41 +33,51 @@ html
         .display-none
           display none 
         .display-inline, .visible-text
-          display inline-block
+          display inline
         .text-center
           text-align center
 
   body
-    -img = "assets/img/wcrowd.jpeg"
-    div.wrapper
+    - img = "assets/img/wcrowd.jpeg"
+    .wrapper.js-wrapper
       h1 Ellipsis Verily
-      div(data-js-ellipsis-verily="{'parent':'.wrapper'}").make-ellipsis
-        h2 Test Truncation
+      .make-ellipsis(data-js-ellipsis-verily="{'parent':'.js-wrapper', 'min': 80}")
+        p. 
+          The container only contains paragraph and link tags. No handler button. Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas <a href="#">convallis ullamcorper</a> ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi.
+
+    .wrapper.js-wrapper-1
+      .make-ellipsis(data-js-ellipsis-verily="{'parent':'.js-wrapper-1'}")
+        h2 Ellipsis Verily (lots of html in text)
         p.text-center
           img(src=img, title="crowd", width="200", align="left", class="crowd")
           a(href="https://github.com/lbruney/ellipsis-verily"): span Back to Plugin
-        span.
-          Suspendisse lectus leo, consectetur in tempor sit amet, placerat quis neque. Etiam luctus porttitor lorem, sed suscipit est rutrum non. Curabitur lobortis nisl a enim congue semper. Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt.
+        strong
+          span.
+            Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas convallis ullamcorper ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi.
         br
-        p.
+        p.display-inline.
           Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas convallis ullamcorper ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi. Nam dictum, odio nec pretium volutpat, arcu ante placerat erat, non tristique elit urna et turpis. Quisque mi metus, ornare sit amet fermentum et, tincidunt et orci. Fusce eget orci a orci congue vestibulum. 
-        p.
+        p.display-inline.
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.
-      p: a(href='#'): strong.ellipsis-handler Read more
-    div.wrapper2   
-      div(data-js-ellipsis-verily="{'parent':'.wrapper2', 'max': 200, 'attributedTags': ['a']}").make-ellipsis
+      p: a(href='#'): strong.ellipsis-handler.js-ellipsis-handler Read more
+    .wrapper.js-wrapper-2
+      .make-ellipsis(data-js-ellipsis-verily="{'parent':'.js-wrapper-2', 'min': 23}")
         h2 Test Truncation
         p.text-center
           img(src=img, title="crowd", width="200", align="left", class="crowd")
           a(href="https://github.com/lbruney/ellipsis-verily"): span Back to Plugin
+        ul 
+          li item 
+          li item 2
+          li item 3
         span.
-          Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt. Lorem ipsum dolor sit amet.
+          杨玉芳和高志宏都在大地震中受伤截瘫。1981年他们住进唐山市截瘫疗养院，在这里相识相恋、喜结连理。见到习近平总书记来看望他们，杨玉芳特别激动。他把自己创作的小说和诗歌集赠送给习近平。夫妇二人还动情地朗诵了一首歌颂唐山地震中解放军英勇救灾的诗歌。习近平说，从你们的精神风貌上，<a href="#">我们看到了生命的顽强</a>、生命的魅力。    肢体健全的人可以活出精彩人生，肢体残疾同样可以活出精彩人生。希望你们不断用实际行动迸发生命光彩，去诠释、书写无悔人生。杨玉芳和高志宏都在大地震中受伤截瘫。1981年他们住进唐山市截瘫疗养院，在这里相识相恋、喜结连理。见到习近平总书记来看望他们，杨玉芳特别激动。他把自己创作的小说和诗歌集赠送给习近平。夫妇二人还动情地朗诵了一首歌颂唐山地震中解放军英勇救灾的诗歌。习近平说，从你们的精神风貌上，我们看到了生命的顽强、生命的魅力。肢体健全的人可以活出精彩人生，肢体残疾同样可以活出精彩人生。希望你们不断用实际行动迸发生命光彩，去诠释、书写无悔人生。
         ul 
           each k in [1,2,3,4,5,6,7]
             li Aenean commodo ultrices imperdiet. Vestibulum ut justo vel
         span.
           Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.
-      p: a(href='#'): strong.ellipsis-handler Read more
+      p: a(href='#'): strong.ellipsis-handler.js-ellipsis-handler Read more
     script(type="text/javascript")
       :coffee
         $(document).ready ->

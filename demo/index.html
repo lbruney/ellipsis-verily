@@ -3,7 +3,7 @@
   <head>
     <title>Ellipsis Verily</title>
     <script src="assets/js/jquery-1.9.0.js"></script>
-    <script src="assets/js/ellipsis-verily.min.js"></script>
+    <script src="assets/js/ellipsis-verily.js"></script>
     <style type="text/css">body {
   background-color: #eee;
   color: #333;
@@ -20,8 +20,7 @@ a .ellipsis-handler {
   border-radius: 3px;
 }
 .make-ellipsis,
-.wrapper,
-.wrapper2 {
+.wrapper {
   width: 70%;
   margin: auto;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -37,7 +36,7 @@ a .ellipsis-handler {
 }
 .display-inline,
 .visible-text {
-  display: inline-block;
+  display: inline;
 }
 .text-center {
   text-align: center;
@@ -46,20 +45,33 @@ a .ellipsis-handler {
     </style>
   </head>
   <body>
-    <div class="wrapper">
+    <div class="wrapper js-wrapper">
       <h1>Ellipsis Verily</h1>
-      <div data-js-ellipsis-verily="{'parent':'.wrapper'}" class="make-ellipsis">
-        <h2>Test Truncation</h2>
-        <p class="text-center"><img src="assets/img/wcrowd.jpeg" title="crowd" width="200" align="left" class="crowd"><a href="https://github.com/lbruney/ellipsis-verily"><span>Back to Plugin</span></a></p><span>Suspendisse lectus leo, consectetur in tempor sit amet, placerat quis neque. Etiam luctus porttitor lorem, sed suscipit est rutrum non. Curabitur lobortis nisl a enim congue semper. Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt.</span><br>
-        <p>Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas convallis ullamcorper ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi. Nam dictum, odio nec pretium volutpat, arcu ante placerat erat, non tristique elit urna et turpis. Quisque mi metus, ornare sit amet fermentum et, tincidunt et orci. Fusce eget orci a orci congue vestibulum. </p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.</p>
+      <div data-js-ellipsis-verily="{'parent':'.js-wrapper', 'min': 80}" class="make-ellipsis">
+        <p>
+          The container only contains paragraph and link tags. No handler button. Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas <a href="#">convallis ullamcorper</a> ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi.
+          
+        </p>
       </div>
-      <p><a href="#"><strong class="ellipsis-handler">Read more</strong></a></p>
     </div>
-    <div class="wrapper2">  
-      <div data-js-ellipsis-verily="{'parent':'.wrapper2', 'max': 200, 'attributedTags': ['a']}" class="make-ellipsis">
+    <div class="wrapper js-wrapper-1">
+      <div data-js-ellipsis-verily="{'parent':'.js-wrapper-1'}" class="make-ellipsis">
+        <h2>Ellipsis Verily (lots of html in text)</h2>
+        <p class="text-center"><img src="assets/img/wcrowd.jpeg" title="crowd" width="200" align="left" class="crowd"><a href="https://github.com/lbruney/ellipsis-verily"><span>Back to Plugin</span></a></p><strong><span>Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas convallis ullamcorper ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi.</span></strong><br>
+        <p class="display-inline">Vivamus fermentum semper porta. Nunc diam velit, adipiscing ut tristique vitae, sagittis vel odio. Maecenas convallis ullamcorper ultricies. Curabitur ornare, ligula semper consectetur sagittis, nisi diam iaculis velit, id fringilla sem nunc vel mi. Nam dictum, odio nec pretium volutpat, arcu ante placerat erat, non tristique elit urna et turpis. Quisque mi metus, ornare sit amet fermentum et, tincidunt et orci. Fusce eget orci a orci congue vestibulum. </p>
+        <p class="display-inline">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.</p>
+      </div>
+      <p><a href="#"><strong class="ellipsis-handler js-ellipsis-handler">Read more</strong></a></p>
+    </div>
+    <div class="wrapper js-wrapper-2">
+      <div data-js-ellipsis-verily="{'parent':'.js-wrapper-2', 'min': 23}" class="make-ellipsis">
         <h2>Test Truncation</h2>
-        <p class="text-center"><img src="assets/img/wcrowd.jpeg" title="crowd" width="200" align="left" class="crowd"><a href="https://github.com/lbruney/ellipsis-verily"><span>Back to Plugin</span></a></p><span>Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt. Lorem ipsum dolor sit amet.</span>
+        <p class="text-center"><img src="assets/img/wcrowd.jpeg" title="crowd" width="200" align="left" class="crowd"><a href="https://github.com/lbruney/ellipsis-verily"><span>Back to Plugin</span></a></p>
+        <ul> 
+          <li>item </li>
+          <li>item 2</li>
+          <li>item 3</li>
+        </ul><span>杨玉芳和高志宏都在大地震中受伤截瘫。1981年他们住进唐山市截瘫疗养院，在这里相识相恋、喜结连理。见到习近平总书记来看望他们，杨玉芳特别激动。他把自己创作的小说和诗歌集赠送给习近平。夫妇二人还动情地朗诵了一首歌颂唐山地震中解放军英勇救灾的诗歌。习近平说，从你们的精神风貌上，<a href="#">我们看到了生命的顽强</a>、生命的魅力。    肢体健全的人可以活出精彩人生，肢体残疾同样可以活出精彩人生。希望你们不断用实际行动迸发生命光彩，去诠释、书写无悔人生。杨玉芳和高志宏都在大地震中受伤截瘫。1981年他们住进唐山市截瘫疗养院，在这里相识相恋、喜结连理。见到习近平总书记来看望他们，杨玉芳特别激动。他把自己创作的小说和诗歌集赠送给习近平。夫妇二人还动情地朗诵了一首歌颂唐山地震中解放军英勇救灾的诗歌。习近平说，从你们的精神风貌上，我们看到了生命的顽强、生命的魅力。肢体健全的人可以活出精彩人生，肢体残疾同样可以活出精彩人生。希望你们不断用实际行动迸发生命光彩，去诠释、书写无悔人生。</span>
         <ul> 
           <li>Aenean commodo ultrices imperdiet. Vestibulum ut justo vel</li>
           <li>Aenean commodo ultrices imperdiet. Vestibulum ut justo vel</li>
@@ -70,7 +82,7 @@ a .ellipsis-handler {
           <li>Aenean commodo ultrices imperdiet. Vestibulum ut justo vel</li>
         </ul><span>Aenean commodo ultrices imperdiet. Vestibulum ut justo vel sapien venenatis tincidunt. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor. Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac in est.</span>
       </div>
-      <p><a href="#"><strong class="ellipsis-handler">Read more</strong></a></p>
+      <p><a href="#"><strong class="ellipsis-handler js-ellipsis-handler">Read more</strong></a></p>
     </div>
     <script type="text/javascript">(function() {
   $(document).ready(function() {
