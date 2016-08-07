@@ -55,7 +55,7 @@ API
 
 Other API 
 ================
-There is infact no real need to tamper with these, but they are here if needed.
+There is infact no real need to tamper with these, but they are here if needed.  
 `selfClosingTags (array)`:           List of self closing tags
 `handler (string)`:       The element selector (class/id) that toggles between the truncation; default is `.js-ellipsis-handler`   
 `visible (string)`:       The element selector (class/id) that is visible after truncation; default is `.visible-text`  
