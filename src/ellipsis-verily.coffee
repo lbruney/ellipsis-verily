@@ -2,6 +2,7 @@
   A true plugin for text truncation with html support.
 
   @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
+  @version 2.0
   @year 2016
 ###
 
@@ -129,7 +130,6 @@ class EllipsisVerily
       i++
 
   makeEllipsis: ->
-
     if @tagsHtml.length
       min = @tagsHtml.toString().length + @ops.min
     else 
@@ -210,7 +210,6 @@ class EllipsisVerily
 
   getRegex: (tag) ->
     return new RegExp(tag, 'gi')
-
 
   $.fn.EllipsisVerily = (options) ->
     $(this).each (i, element) ->
