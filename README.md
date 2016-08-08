@@ -50,16 +50,17 @@ API
 `delimiters (object)`:    An object of 3 delimiters:  
 - `tag (string)` :        An internal delimiter used to replace the space between tag attributes (don't set this if you don't know what it does)
 - `break (string)`:       After the first `min` characters, the first occurrence of this creates the truncation point; default is ` ` (space)
-- `nonEnglishBreak (string)`: Additional break delimiter for non-English texts; e.g. Chinese texts do not contain English character spaces, so we can break at `。`  
+- `nonEnglishBreak (string)`: Additional break delimiter for non-English texts; e.g. Chinese texts do not contain English character spaces, so we can break at `。` 
+`handler (string)`:       The element selector (class/id) that toggles between the truncation; default is `.js-ellipsis-handler`  
+`selfClosingTags (array)`:  List of self closing tags  
+  
    
 
 Other API 
 ================
 There is infact no real need to tamper with these, but they are here if needed.  
-`selfClosingTags (array)`:           List of self closing tags  
-`handler (string)`:       The element selector (class/id) that toggles between the truncation; default is `.js-ellipsis-handler`   
 `visible (string)`:       The element selector (class/id) that is visible after truncation; default is `.visible-text`  
-`truncated (string)`:     The element selector (class/id) that is truncated; default is `.truncated-text`      
+`truncated (string)`:     The element selector (class/id) that is truncated; default is `.truncated-text`        
 `ellipsis (string)`:      The element selector (class/id) that holds the ellipsis symbol; default is `.ellipsis-text`    
 `hiddenClass (string)`:   The class name (do not include the `.`) whose style is set to `display: none;`; default is `display-none`      
 `showClass (string)`:     The class name (do not include the `.`) whose style is set to `display: inline-block;`; default is `display-block`   
