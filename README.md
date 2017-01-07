@@ -47,31 +47,29 @@ API
 `moreText (string)`:      The text to show on the handler when text is truncated; default is `Read more`   
 `lessText (string)`:      The text to show on the handler when all text is visible; default is `Show less`  
 `parent (string)`:        The element selector (class/id) of the parent where the handler can be found. This is useful if multiple containers on the same page are to be truncated which all have the same handler class name. default is `null`; (Do not set this if the text to be truncated and the handler do not have the same parent container)  
+`handler (string)`:       The element selector (class/id) that toggles between the truncation; default is `.js-ellipsis-handler`  
+`selfClosingTags (array)`:  List of self closing tags  
 `delimiters (object)`:    An object of 3 delimiters:  
 - `tag (string)` :        An internal delimiter used to replace the space between tag attributes (don't set this if you don't know what it does)
 - `break (string)`:       After the first `min` characters, the first occurrence of this creates the truncation point; default is ` ` (space)
 - `nonEnglishBreak (string)`: Additional break delimiter for non-English texts; e.g. Chinese texts do not contain English character spaces, so we can break at `。`  
+
+  
    
 
 Other API 
 ================
-There is infact no real need to tamper with these, but they are here if needed.
-`selfClosingTags (array)`:           List of self closing tags
-`handler (string)`:       The element selector (class/id) that toggles between the truncation; default is `.js-ellipsis-handler`   
+There is infact no real need to tamper with these, but they are here if needed.  
 `visible (string)`:       The element selector (class/id) that is visible after truncation; default is `.visible-text`  
-`truncated (string)`:     The element selector (class/id) that is truncated; default is `.truncated-text`      
+`truncated (string)`:     The element selector (class/id) that is truncated; default is `.truncated-text`            
 `ellipsis (string)`:      The element selector (class/id) that holds the ellipsis symbol; default is `.ellipsis-text`    
 `hiddenClass (string)`:   The class name (do not include the `.`) whose style is set to `display: none;`; default is `display-none`      
-`showClass (string)`:     The class name (do not include the `.`) whose style is set to `display: inline-block;`; default is `display-block`   
+`showClass (string)`:     The class name (do not include the `.`) whose style is set to `display: inline-inline;`; default is `display-inline`   
 
 Troubleshoot
 ================
 * Make sure you added the `hiddenClass` and `showClass` styles to your page. If you change these two default class names in the plugin options, make sure the change is reflected in the CSS.
 * As `hiddenClass` and `showClass` will be applied as classes, they should not have the `.` in the name. `handler`, `visible`, `truncated` and `ellipsis` could either be a class or id selector and should include either `.` or `#` respectively.
-
-Limitations
-================
-* Html attributes like: alt="a>b" not supported. Attributes should not have > or < included.
 
 ## License
 
