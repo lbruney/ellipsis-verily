@@ -1,8 +1,9 @@
 ###
   A true plugin for text truncation with html support.
+  https://github.com/lbruney/ellipsis-verily
 
-  @autor Lisa-Ann Bruney <lisabruney@yahoo.com>
-  @version 2.0.3
+  @autor L. Bruney <859763852@qq.com>
+  @version 2.0.5
   @year 2016
 ###
 
